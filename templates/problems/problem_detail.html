@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}{{ problem.title }} — NEOcode{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-success text-decoration-none">Bosh sahifa</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'problems:category' category.pk %}" class="text-success text-decoration-none">{{ category.name }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ problem.title }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-5 mb-4 mb-lg-0">
+        <div class="card border-0 shadow-sm rounded-3 h-100">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <h1 class="h4 fw-bold mb-0">{{ problem.title }}</h1>
+                    {% if problem.stars %}
+                    <i class="bi bi-star-fill text-warning small" title="Qiyin"></i>
+                    {% endif %}
+                    {% if solved %}
+                    <span class="badge bg-success">Yechildi</span>
+                    {% endif %}
+                </div>
+                <div class="text-muted small mb-3">
+                    <code class="bg-light px-2 py-1 rounded">{{ problem.function_name }}({{ problem.params }})</code>
+                </div>
+                <hr>
+                <div class="problem-description" style="white-space: pre-wrap;">{{ problem.description }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        {% if test_results %}
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-semibold"><i class="bi bi-table me-2"></i>Test natijalari</h5>
+            </div>
+            <div class="card-body p-0 overflow-auto">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 4rem;">#</th>
+                            <th>Input</th>
+                            <th>Yuborilgan natija</th>
+                            <th>Kutilgan natija</th>
+                            <th style="width: 6rem;">Natija</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in test_results %}
+                        <tr class="{% if row.passed %}table-success{% else %}table-danger{% endif %}">
+                            <td>{{ forloop.counter }}</td>
+                            <td><code class="small">{{ row.input_data }}</code></td>
+                            <td><code class="small">{{ row.actual_output }}</code></td>
+                            <td><code class="small">{{ row.expected_output }}</code></td>
+                            <td>
+                                {% if row.passed %}
+                                <span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i>TRUE</span>
+                                {% else %}
+                                <span class="text-danger fw-bold"><i class="bi bi-x-circle-fill me-1"></i>FALSE</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-semibold"><i class="bi bi-code-slash me-2"></i>Yechimingiz</h5>
+            </div>
+            <div class="card-body p-0">
+                <form method="post" action="{% url 'problems:submit' problem.pk %}">
+                    {% csrf_token %}
+                    <div class="p-3">
+                        <textarea name="code" id="code" class="form-control font-monospace" rows="16" placeholder="def {{ problem.function_name }}({{ problem.params }}):&#10;    # Kod yozing&#10;    pass" style="font-size: 0.9rem; resize: vertical;">{% if submitted_code %}{{ submitted_code }}{% else %}def {{ problem.function_name }}({{ problem.params }}):
+    # Kod yozing
+    pass{% endif %}</textarea>
+                    </div>
+                    <div class="card-footer bg-white border-0 p-3 d-flex gap-2">
+                        {% if user.is_authenticated %}
+                        <button type="submit" name="run" value="1" class="btn btn-outline-primary">
+                            <i class="bi bi-play-fill me-1"></i>Run
+                        </button>
+                        <button type="submit" name="submit" value="1" class="btn btn-success">
+                            <i class="bi bi-send me-1"></i>Yuborish
+                        </button>
+                        {% else %}
+                        <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-success">Yuborish uchun kiring</a>
+                        {% endif %}
+                        <a href="{% url 'problems:category' category.pk %}" class="btn btn-outline-secondary">Ortga</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+  var textarea = document.getElementById('code');
+  if (!textarea) return;
+
+  textarea.addEventListener('keydown', function(e) {
+    if (e.key !== 'Tab') return;
+    e.preventDefault();
+
+    var start = this.selectionStart;
+    var end = this.selectionEnd;
+    var value = this.value;
+    var tab = '    '; // 4 bo'shliq
+
+    if (e.shiftKey) {
+      // Shift+Tab: oldingi tab/4 bo'shliqni olib tashlash
+      var lineStart = value.lastIndexOf('\n', start - 1) + 1;
+      var line = value.substring(lineStart, end);
+      var toRemove = 0;
+      if (line.startsWith('\t')) toRemove = 1;
+      else if (line.startsWith('    ')) toRemove = 4;
+      else {
+        for (var i = 0; i < line.length && (line[i] === ' ' || line[i] === '\t'); i++) toRemove++;
+      }
+      if (toRemove > 0) {
+        var newStart = Math.max(lineStart, start - toRemove);
+        this.value = value.substring(0, newStart) + value.substring(newStart + toRemove);
+        this.selectionStart = this.selectionEnd = start - (start - newStart);
+      }
+    } else {
+      this.value = value.substring(0, start) + tab + value.substring(end);
+      this.selectionStart = this.selectionEnd = start + tab.length;
+    }
+  });
+})();
+</script>
+{% endblock %}
