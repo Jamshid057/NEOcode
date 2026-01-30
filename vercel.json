@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "buildCommand": "uv run python manage.py migrate --noinput && uv run python manage.py collectstatic --noinput",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index" }
   ]
