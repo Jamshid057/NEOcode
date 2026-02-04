@@ -10,34 +10,28 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import dj_database_url
 import os
 from os.path import join
 from pathlib import Path
 
-import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-q#xh$jv)_c3vqsb2b+9$7x#(#dv$ndtmb_k9oa@txtf_ukg21o"
+)
+DEBUG = True
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-q#xh$jv)_c3vqsb2b+9$7x#(#dv$ndtmb_k9oa@txtf_ukg21o")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "True").lower() in ("1", "true", "yes")
-
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",") if os.environ.get("ALLOWED_HOSTS") else ["*"]
+ALLOWED_HOSTS = ["*"]
 
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -80,34 +74,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "root.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-# Production/Vercel: DATABASE_URL (Neon connection string) environment variable dan
-# Local: DATABASE_URL bo'lmasa, local PostgreSQL ishlatiladi
-if os.environ.get("DATABASE_URL"):
-    DATABASES = {
-        "default": dj_database_url.config(
-            conn_max_age=600,
-            conn_health_checks=True,
-            ssl_require=True,
+DATABASES = {
+    "default": dj_database_url.parse(
+        os.environ.get(
+            "DATABASE_URL",
+            "postgresql://admin:Vb4hJajzvMcCSjyo5k7WMqGALaPwzsTv@dpg-d61frfcoud1c73a8siug-a.oregon-postgres.render.com/neocodedb"
         )
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("PGDATABASE", "leetcode_db"),
-            "USER": os.environ.get("PGUSER", "postgres"),
-            "PASSWORD": os.environ.get("PGPASSWORD", "1"),
-            "HOST": os.environ.get("PGHOST", "localhost"),
-            "PORT": os.environ.get("PGPORT", "5433"),
-        }
-    }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+    )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {

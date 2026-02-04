@@ -1,6 +1,8 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import redirect, render
+
 from .models import CustomUser
+
 
 def login_view(request):
     error = None
@@ -31,8 +33,12 @@ def register_view(request):
         elif CustomUser.objects.filter(email=email).exists():
             error = "Email already registered"
         else:
-            user = CustomUser.objects.create_user(email=email, password=password1,
-                                                  first_name=first_name, last_name=last_name)
+            user = CustomUser.objects.create_user(
+                email=email,
+                password=password1,
+                first_name=first_name,
+                last_name=last_name,
+            )
             login(request, user)
             return redirect("home")
 
@@ -42,4 +48,3 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     return redirect("home")
-
