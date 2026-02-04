@@ -1,6 +1,6 @@
 mig:
-	python3 manage.py makemigrations
-	python3 manage.py migrate
+	uv run python3 manage.py makemigrations
+	uv run python3 manage.py migrate
 
 run:
-	python3 manage.py runserver
+	uv run python3 manage.py runserver
