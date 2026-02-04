@@ -80,7 +80,7 @@
                 <form method="post" action="{% url 'problems:submit' problem.pk %}">
                     {% csrf_token %}
                     <div class="p-3">
-                        <textarea name="code" id="code" class="form-control font-monospace" rows="16" placeholder="def {{ problem.function_name }}({{ problem.params }}):&#10;    # Kod yozing&#10;    pass" style="font-size: 0.9rem; resize: vertical;">{% if submitted_code %}{{ submitted_code }}{% else %}def {{ problem.function_name }}({{ problem.params }}):
+                        <textarea name="code" id="code" class="form-control font-monospace" rows="16" placeholder="def {{ problem.function_name }}({{ problem.params }}):&#10;    # Kod yozing&#10;    pass" style="font-size: 0.9rem; resize: vertical;">{% if submitted_code %}{{ submitted_code }}{% elif saved_code %}{{ saved_code }}{% else %}def {{ problem.function_name }}({{ problem.params }}):
     # Kod yozing
     pass{% endif %}</textarea>
                     </div>

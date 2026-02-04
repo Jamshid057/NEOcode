@@ -13,6 +13,7 @@ class Submission(models.Model):
         on_delete=models.CASCADE,
         related_name="submissions",
     )
+    code = models.TextField(blank=True, help_text="Yechilgan kod")
     solved_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

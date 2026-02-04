@@ -34,10 +34,15 @@ def problem_detail(request, pk):
     category = problem.category
 
     solved = False
+    saved_code = ""
     if request.user.is_authenticated:
-        solved = Submission.objects.filter(
+        sub = Submission.objects.filter(
             user=request.user, problem=problem
-        ).exists()
+        ).first()
+        if sub:
+            solved = True
+            if sub.code:
+                saved_code = sub.code
 
     return render(
         request,
@@ -46,6 +51,7 @@ def problem_detail(request, pk):
             "problem": problem,
             "category": category,
             "solved": solved,
+            "saved_code": saved_code,
         },
     )
 
@@ -75,7 +81,11 @@ def problem_submit(request, pk):
     else:
         # Yuborish tugmasi — natija + Submission
         if test_results and all(r["passed"] for r in test_results):
-            Submission.objects.get_or_create(user=request.user, problem=problem)
+            Submission.objects.update_or_create(
+                user=request.user,
+                problem=problem,
+                defaults={"code": code},
+            )
             messages.success(request, "Yechimingiz qabul qilindi. Yechildi!")
         elif test_results:
             messages.warning(request, "Ba'zi testlar o'tmadi. Barcha testlar o'tguncha yuborilmaydi.")
