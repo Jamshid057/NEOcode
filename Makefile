@@ -3,5 +3,5 @@ mig:
 	uv run python3 manage.py migrate
 
 run:
-	gunicorn config.wsgi:application --bind 0.0.0.0:${PORT}
+	gunicorn root.wsgi:application --bind 0.0.0.0:${PORT}
 
