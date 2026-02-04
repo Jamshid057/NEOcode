@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get(
     "SECRET_KEY", "django-insecure-q#xh$jv)_c3vqsb2b+9$7x#(#dv$ndtmb_k9oa@txtf_ukg21o"
 )
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -54,6 +55,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ROOT_URLCONF = "root.urls"
 
@@ -78,7 +81,7 @@ DATABASES = {
     "default": dj_database_url.parse(
         os.environ.get(
             "DATABASE_URL",
-            "postgresql://admin:Vb4hJajzvMcCSjyo5k7WMqGALaPwzsTv@dpg-d61frfcoud1c73a8siug-a.oregon-postgres.render.com/neocodedb"
+            "postgresql://admin:Vb4hJajzvMcCSjyo5k7WMqGALaPwzsTv@dpg-d61frfcoud1c73a8siug-a.oregon-postgres.render.com/neocodedb",
         )
     )
 }
