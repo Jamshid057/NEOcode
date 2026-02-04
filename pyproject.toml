@@ -10,4 +10,5 @@ dependencies = [
     "python-dotenv>=1.2.1",
     "dj-database-url>=2.2.0",
     "gunicorn>=25.0.1",
+    "whitenoise>=6.11.0",
 ]
