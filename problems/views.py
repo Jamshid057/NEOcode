@@ -58,8 +58,6 @@ def problem_detail(request, pk):
 
 @login_required(login_url="/auth/login/")
 def problem_submit(request, pk):
-    if request.method != "POST":
-        return redirect("problems:detail", pk=pk)
 
     problem = get_object_or_404(Problem, pk=pk)
     code = (request.POST.get("code") or "").strip()
